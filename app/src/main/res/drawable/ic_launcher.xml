@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#0E0E16"
+        android:pathData="M0,0h108v108h-108z" />
+    <!-- prompt chevron -->
+    <path
+        android:strokeColor="#B98CFF"
+        android:strokeWidth="7"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M32,38 L52,54 L32,70" />
+    <!-- cursor -->
+    <path
+        android:strokeColor="#E4E4EF"
+        android:strokeWidth="7"
+        android:strokeLineCap="round"
+        android:pathData="M58,70 L78,70" />
+</vector>
