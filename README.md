@@ -1,61 +1,61 @@
 # NovaTerm
 
-Emulator de terminal pentru Android 16 și 17, cu nucleul scris în Rust.
+A terminal emulator for Android 16 and 17 with its core written in Rust.
 
-- **Rust** (`rust/`): pseudo-terminalul (PTY), procesul shell, parserul VT100/xterm și
-  bufferul de ecran. Zero dependențe externe; legăturile JNI și libc sunt scrise de mână.
-- **Kotlin** (`app/`): doar interfața — desenarea grilei, tastatura, gesturile, setările.
-  Fără AndroidX, doar API-urile platformei.
+- **Rust** (`rust/`): the pseudo-terminal (PTY), the shell process, the VT100/xterm parser
+  and the screen buffer. Zero external dependencies; the JNI and libc bindings are hand-written.
+- **Kotlin** (`app/`): the UI only — drawing the grid, keyboard, gestures, settings.
+  No AndroidX, just platform APIs.
 
-## Ce știe
+## Features
 
-- culori 16 / 256 / truecolor, bold, italic, subliniat, inversat, tăiat
-- ecran alternativ (vim, less, htop), regiuni de scroll, caractere late, UTF-8
-- istoric de 5000 de linii (glisezi cu degetul), redimensionare la rotire și la tastatură
-- bară de taste: ESC, TAB, CTRL, ALT, săgeți, HOME/END, PGUP/PGDN
-- tastatură fizică: Ctrl/Alt, F1–F12, săgeți
-- ciupire cu două degete pentru mărimea fontului
-- apăsare lungă: copiază ecranul, lipește (bracketed paste), setări
+- 16 / 256 / truecolor, bold, italic, underline, inverse, strikethrough
+- alternate screen (vim, less, htop), scroll regions, wide characters, UTF-8
+- 5000 lines of scrollback (drag to scroll), resizes on rotation and when the keyboard opens
+- extra keys bar: ESC, TAB, CTRL, ALT, arrows, HOME/END, PGUP/PGDN
+- hardware keyboards: Ctrl/Alt, F1–F12, arrows
+- pinch to change the font size
+- long press: copy screen, paste (bracketed paste), settings
 
-## Personalizare (⚙ din bara de taste sau apăsare lungă → Setări)
+## Customization (⚙ on the keys bar, or long press → Settings)
 
-- 9 teme: Nova, Dracula, Gruvbox Dark, Nord, Tokyo Night, Catppuccin Mocha,
+- 9 themes: Nova, Dracula, Gruvbox Dark, Nord, Tokyo Night, Catppuccin Mocha,
   Solarized Dark, Matrix, One Light
-- culori proprii pentru text, fundal și cursor (`#RRGGBB`)
-- mărimea fontului
-- stilul cursorului (bloc, linie jos, bară verticală) și clipirea lui
-- afișarea barei de taste suplimentare
-- ecran mereu aprins
-- shell-ul pornit (implicit `/system/bin/sh`)
+- custom text, background and cursor colors (`#RRGGBB`)
+- font size
+- cursor style (block, underline, vertical bar) and blinking
+- show or hide the extra keys bar
+- keep screen on
+- which shell to start (default `/system/bin/sh`)
 
-Temele noi se adaugă în `app/src/main/kotlin/dev/snova/novaterm/Settings.kt`, în lista `Themes.ALL`.
+To add a theme, append it to `Themes.ALL` in
+`app/src/main/kotlin/dev/snova/novaterm/Settings.kt`.
 
-## Compilare
+## Building
 
-### Varianta simplă: GitHub Actions
+### GitHub Actions
 
-Urcă proiectul într-un repo pe GitHub. Workflow-ul din `.github/workflows/build.yml`
-rulează testele Rust, compilează APK-ul și îl atașează ca artefact (`NovaTerm-debug-apk`)
-la rularea din tabul **Actions**.
+Every push runs `.github/workflows/build.yml`, which tests the Rust core, builds the APK
+and uploads it as the `NovaTerm-debug-apk` artifact on the run's page in the **Actions** tab.
 
-### Local (Fedora)
+### Locally
 
-Ai nevoie de JDK 17+, Android SDK (platforma 36) cu NDK și Rust.
+Requires JDK 17+, the Android SDK (platform 36) with the NDK, and Rust.
 
 ```sh
 rustup target add aarch64-linux-android x86_64-linux-android
 cargo install cargo-ndk
 export ANDROID_HOME=$HOME/Android/Sdk
-export ANDROID_NDK_HOME=$ANDROID_HOME/ndk/<versiune>
+export ANDROID_NDK_HOME=$ANDROID_HOME/ndk/<version>
 ./gradlew assembleDebug
 adb install app/build/outputs/apk/debug/app-debug.apk
 ```
 
-Testele nucleului rulează pe orice Linux, fără Android: `cd rust && cargo test`.
+The core's tests run on any Linux machine, no Android needed: `cd rust && cargo test`.
 
-## Limite
+## Limitations
 
-- Shell-ul este cel al sistemului Android (`mksh` + `toybox`), rulat cu drepturile
-  aplicației: fără root și fără manager de pachete. Nu este o distribuție Linux completă.
-- O singură sesiune; se închide când aplicația e închisă sau oprită de sistem în fundal.
-- Liniile nu se rearanjează (reflow) la schimbarea lățimii.
+- The shell is Android's own (`mksh` + `toybox`), running with the app's permissions:
+  no root and no package manager. It is not a full Linux distribution.
+- One session only; it ends when the app is closed or killed in the background.
+- Lines are not reflowed when the width changes.

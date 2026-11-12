@@ -151,7 +151,7 @@ class TerminalView(context: Context, private val settings: Settings) : View(cont
 
         val h = Native.create(shell, arrayOf(shell), envArray, home.path, rows, cols)
         if (h == 0L) {
-            startError = "Nu am putut porni $shell"
+            startError = "Could not start $shell"
             return
         }
         startError = null
@@ -184,7 +184,7 @@ class TerminalView(context: Context, private val settings: Settings) : View(cont
         exited = true
         Native.feedLocal(
             h,
-            "\r\n\u001b[2m[proces încheiat, cod $code — apasă Enter pentru un shell nou]\u001b[0m".toByteArray()
+            "\r\n\u001b[2m[process exited with code $code — press Enter for a new shell]\u001b[0m".toByteArray()
         )
         invalidate()
     }
@@ -545,9 +545,9 @@ class TerminalView(context: Context, private val settings: Settings) : View(cont
 
     private fun showMenu() {
         val menu = PopupMenu(context, this)
-        menu.menu.add(0, 1, 0, "Copiază ecranul")
-        menu.menu.add(0, 2, 1, "Lipește")
-        menu.menu.add(0, 3, 2, "Setări")
+        menu.menu.add(0, 1, 0, "Copy screen")
+        menu.menu.add(0, 2, 1, "Paste")
+        menu.menu.add(0, 3, 2, "Settings")
         menu.setOnMenuItemClickListener {
             when (it.itemId) {
                 1 -> copyScreen()
@@ -574,7 +574,7 @@ class TerminalView(context: Context, private val settings: Settings) : View(cont
         }
         val clip = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         clip.setPrimaryClip(ClipData.newPlainText("NovaTerm", sb.toString().trimEnd('\n')))
-        Toast.makeText(context, "Copiat", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "Copied", Toast.LENGTH_SHORT).show()
     }
 
     private fun paste() {

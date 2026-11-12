@@ -16,35 +16,35 @@ class SettingsUi(
     private val settings: Settings,
     private val onChange: () -> Unit,
 ) {
-    private val cursorNames = arrayOf("Bloc", "Linie jos", "Bară verticală")
+    private val cursorNames = arrayOf("Block", "Underline", "Vertical bar")
 
-    private fun yesNo(b: Boolean) = if (b) "da" else "nu"
+    private fun yesNo(b: Boolean) = if (b) "on" else "off"
     private fun hex(rgb: Int) = "#%06X".format(rgb and 0xFFFFFF)
     private fun colorLabel(key: String, value: Int) =
-        hex(value) + if (settings.customColor(key) != null) " (personalizat)" else " (din temă)"
+        hex(value) + if (settings.customColor(key) != null) " (custom)" else " (from theme)"
 
     fun show() {
         val items = arrayOf(
-            "Temă: ${settings.theme.name}",
-            "Culoare text: ${colorLabel("fg", settings.fg)}",
-            "Culoare fundal: ${colorLabel("bg", settings.bg)}",
-            "Culoare cursor: ${colorLabel("cursor", settings.cursor)}",
-            "Mărime font: ${settings.fontSp.toInt()}",
-            "Stil cursor: ${cursorNames[settings.cursorStyle]}",
-            "Cursor clipitor: ${yesNo(settings.cursorBlink)}",
-            "Bara de taste suplimentare: ${yesNo(settings.extraKeys)}",
-            "Ecran mereu aprins: ${yesNo(settings.keepScreenOn)}",
+            "Theme: ${settings.theme.name}",
+            "Text color: ${colorLabel("fg", settings.fg)}",
+            "Background color: ${colorLabel("bg", settings.bg)}",
+            "Cursor color: ${colorLabel("cursor", settings.cursor)}",
+            "Font size: ${settings.fontSp.toInt()}",
+            "Cursor style: ${cursorNames[settings.cursorStyle]}",
+            "Blinking cursor: ${yesNo(settings.cursorBlink)}",
+            "Extra keys bar: ${yesNo(settings.extraKeys)}",
+            "Keep screen on: ${yesNo(settings.keepScreenOn)}",
             "Shell: ${settings.shell}",
-            "Resetează toate setările",
+            "Reset all settings",
         )
         AlertDialog.Builder(activity)
-            .setTitle("Setări")
+            .setTitle("Settings")
             .setItems(items) { _, which ->
                 when (which) {
                     0 -> pickTheme()
-                    1 -> pickColor("fg", "Culoare text")
-                    2 -> pickColor("bg", "Culoare fundal")
-                    3 -> pickColor("cursor", "Culoare cursor")
+                    1 -> pickColor("fg", "Text color")
+                    2 -> pickColor("bg", "Background color")
+                    3 -> pickColor("cursor", "Cursor color")
                     4 -> pickFont()
                     5 -> pickCursor()
                     6 -> toggle { settings.cursorBlink = !settings.cursorBlink }
@@ -54,7 +54,7 @@ class SettingsUi(
                     10 -> confirmReset()
                 }
             }
-            .setPositiveButton("Închide", null)
+            .setPositiveButton("Close", null)
             .show()
     }
 
@@ -67,7 +67,7 @@ class SettingsUi(
     private fun pickTheme() {
         val names = Themes.ALL.map { it.name }.toTypedArray()
         AlertDialog.Builder(activity)
-            .setTitle("Temă")
+            .setTitle("Theme")
             .setSingleChoiceItems(names, settings.themeIndex) { dialog, which ->
                 settings.themeIndex = which
                 settings.clearCustomColors() // a new theme replaces custom colors
@@ -75,20 +75,20 @@ class SettingsUi(
                 dialog.dismiss()
                 show()
             }
-            .setNegativeButton("Înapoi") { _, _ -> show() }
+            .setNegativeButton("Back") { _, _ -> show() }
             .show()
     }
 
     private fun pickCursor() {
         AlertDialog.Builder(activity)
-            .setTitle("Stil cursor")
+            .setTitle("Cursor style")
             .setSingleChoiceItems(cursorNames, settings.cursorStyle) { dialog, which ->
                 settings.cursorStyle = which
                 onChange()
                 dialog.dismiss()
                 show()
             }
-            .setNegativeButton("Înapoi") { _, _ -> show() }
+            .setNegativeButton("Back") { _, _ -> show() }
             .show()
     }
 
@@ -118,19 +118,19 @@ class SettingsUi(
             .setPositiveButton("OK") { _, _ ->
                 val rgb = parseHex(input.text.toString())
                 if (rgb == null) {
-                    Toast.makeText(activity, "Culoare invalidă — folosește forma #RRGGBB", Toast.LENGTH_LONG).show()
+                    Toast.makeText(activity, "Invalid color — use the form #RRGGBB", Toast.LENGTH_LONG).show()
                 } else {
                     settings.setCustomColor(key, rgb)
                     onChange()
                 }
                 show()
             }
-            .setNeutralButton("Din temă") { _, _ ->
+            .setNeutralButton("From theme") { _, _ ->
                 settings.setCustomColor(key, null)
                 onChange()
                 show()
             }
-            .setNegativeButton("Înapoi") { _, _ -> show() }
+            .setNegativeButton("Back") { _, _ -> show() }
             .show()
     }
 
@@ -166,8 +166,8 @@ class SettingsUi(
             addView(bar)
         }
         AlertDialog.Builder(activity)
-            .setTitle("Mărime font")
-            .setMessage("Poți și ciupi ecranul cu două degete.")
+            .setTitle("Font size")
+            .setMessage("You can also pinch the screen with two fingers.")
             .setView(padded(box))
             .setPositiveButton("OK") { _, _ -> show() }
             .show()
@@ -182,25 +182,25 @@ class SettingsUi(
         }
         AlertDialog.Builder(activity)
             .setTitle("Shell")
-            .setMessage("Calea completă a programului pornit în terminal. Se aplică la următoarea sesiune (scrie exit, apoi Enter).")
+            .setMessage("Full path of the program started in the terminal. Applies to the next session (type exit, then press Enter).")
             .setView(padded(input))
             .setPositiveButton("OK") { _, _ ->
                 settings.shell = input.text.toString()
                 show()
             }
-            .setNegativeButton("Înapoi") { _, _ -> show() }
+            .setNegativeButton("Back") { _, _ -> show() }
             .show()
     }
 
     private fun confirmReset() {
         AlertDialog.Builder(activity)
-            .setTitle("Resetezi toate setările?")
-            .setPositiveButton("Resetează") { _, _ ->
+            .setTitle("Reset all settings?")
+            .setPositiveButton("Reset") { _, _ ->
                 settings.resetAll()
                 onChange()
                 show()
             }
-            .setNegativeButton("Înapoi") { _, _ -> show() }
+            .setNegativeButton("Back") { _, _ -> show() }
             .show()
     }
 }
